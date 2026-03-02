@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leads Clínica</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body { font-family: Arial; background:#f5f5f5; padding:20px; }
+    h1 { color:#333; }
+    table { background:white; border-collapse: collapse; width:100%; }
+    th, td { padding:10px; border-bottom:1px solid #ddd; }
+    th { background:#111; color:white; }
+  </style>
+</head>
+<body>
+
+<h1>💎 Leads en Tiempo Real</h1>
+<table id="tabla">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Nombre</th>
+      <th>Teléfono</th>
+      <th>Mensaje</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const supabaseUrl = "https://wmjmasysrgydwzeopkgx.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtam1hc3lzcmd5ZHd6ZW9wa2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NDgwNzEsImV4cCI6MjA4ODAyNDA3MX0.wgh_3LocvBbAaXedAxDIw2Uq6i1OmoJCEZzsPIZtEOQ";
+
+const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+async function cargar() {
+  const { data } = await client
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const tbody = document.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(l => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${l.created_at}</td>
+        <td>${l.nombre || '-'}</td>
+        <td>${l.telefono || '-'}</td>
+        <td>${l.mensaje || '-'}</td>
+      </tr>
+    `;
+  });
+}
+
+// cargar inicial
+cargar();
+
+// auto refresh cada 5s
+setInterval(cargar, 5000);
+</script>
+
+</body>
+</html>
